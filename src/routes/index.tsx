@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Robux Gifting" },
-      { name: "description", content: "Send Robux gifts to your friends instantly." },
+      { name: "description", content: "Send Robux gifts to your clients instantly." },
     ],
   }),
   component: Index,
