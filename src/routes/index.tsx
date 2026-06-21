@@ -30,7 +30,16 @@ function RobuxIcon({ className = "h-5 w-5" }: { className?: string }) {
   );
 }
 
+type RobloxProfile = {
+  found: boolean;
+  id?: number;
+  name?: string;
+  displayName?: string;
+  avatarUrl?: string | null;
+};
+
 function Index() {
+  const lookup = useServerFn(lookupRobloxUser);
   const [balance, setBalance] = useState(120_000_000);
   const [username, setUsername] = useState("");
   const [selected, setSelected] = useState<number | null>(null);
@@ -38,17 +47,44 @@ function Index() {
   const [toast, setToast] = useState<string | null>(null);
   const [history, setHistory] = useState<Gift[]>([]);
 
-  const canSend =
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [profile, setProfile] = useState<RobloxProfile | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [lookupError, setLookupError] = useState<string | null>(null);
+
+  const canOpen =
     username.trim().length > 0 && selected !== null && selected <= balance && !sending;
 
+  const openConfirm = async () => {
+    if (!canOpen || selected === null) return;
+    setConfirmOpen(true);
+    setProfile(null);
+    setLookupError(null);
+    setLoadingProfile(true);
+    try {
+      const res = (await lookup({ data: { username: username.trim() } })) as RobloxProfile;
+      setProfile(res);
+      if (!res.found) setLookupError("No Roblox user with that name.");
+    } catch {
+      setLookupError("Could not reach Roblox. Try again.");
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
+
+  const closeConfirm = () => {
+    if (sending) return;
+    setConfirmOpen(false);
+  };
+
   const handleSend = () => {
-    if (!canSend || selected === null) return;
+    if (selected === null || !profile?.found) return;
     setSending(true);
     setTimeout(() => {
       setBalance((b) => b - selected);
       const gift: Gift = {
         id: Date.now(),
-        username: username.trim(),
+        username: profile.name ?? username.trim(),
         amount: selected,
         at: new Date().toLocaleTimeString(),
       };
@@ -57,9 +93,12 @@ function Index() {
       setSending(false);
       setSelected(null);
       setUsername("");
+      setProfile(null);
+      setConfirmOpen(false);
       setTimeout(() => setToast(null), 2800);
     }, 700);
   };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
