@@ -249,6 +249,90 @@ function Index() {
           </div>
         </div>
       )}
+
+      {confirmOpen && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in"
+          onClick={closeConfirm}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md rounded-2xl border border-border p-6 shadow-[var(--shadow-card)] animate-in zoom-in-95"
+            style={{ background: "var(--gradient-card)" }}
+          >
+            <h3 className="text-lg font-bold text-center">Confirm gift</h3>
+            <p className="text-center text-sm text-muted-foreground mt-1">
+              Are you sure you want to send
+            </p>
+            <div className="my-3 flex items-center justify-center gap-2 text-primary">
+              <RobuxIcon className="h-7 w-7" />
+              <span className="text-3xl font-extrabold tabular-nums text-foreground">
+                {selected !== null ? fmt(selected) : ""}
+              </span>
+            </div>
+            <p className="text-center text-sm text-muted-foreground">to</p>
+
+            <div className="mt-4 rounded-xl border border-border bg-card/60 p-4 min-h-[112px] flex items-center gap-4">
+              {loadingProfile ? (
+                <>
+                  <div className="h-16 w-16 rounded-full bg-muted animate-pulse" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-32 rounded bg-muted animate-pulse" />
+                    <div className="h-3 w-20 rounded bg-muted animate-pulse" />
+                  </div>
+                </>
+              ) : profile?.found ? (
+                <>
+                  {profile.avatarUrl ? (
+                    <img
+                      src={profile.avatarUrl}
+                      alt={profile.name}
+                      className="h-16 w-16 rounded-full bg-muted object-cover border border-border"
+                    />
+                  ) : (
+                    <div className="h-16 w-16 rounded-full bg-muted grid place-items-center text-xl font-bold">
+                      {profile.name?.[0]?.toUpperCase()}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-semibold truncate">{profile.displayName}</p>
+                    <p className="text-sm text-muted-foreground truncate">@{profile.name}</p>
+                    <a
+                      href={`https://www.roblox.com/users/${profile.id}/profile`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-primary hover:underline"
+                    >
+                      View profile ↗
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-destructive">
+                  {lookupError ?? "User not found."}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 gap-2.5">
+              <button
+                onClick={closeConfirm}
+                disabled={sending}
+                className="rounded-xl border border-border bg-secondary px-4 py-3 font-medium hover:bg-accent transition disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSend}
+                disabled={sending || loadingProfile || !profile?.found}
+                className="rounded-xl bg-primary text-primary-foreground px-4 py-3 font-semibold hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-[var(--shadow-glow)]"
+              >
+                {sending ? "Sending..." : "Confirm"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
