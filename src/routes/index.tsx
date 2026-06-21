@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import { lookupRobloxUser } from "@/lib/roblox.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,7 +30,16 @@ function RobuxIcon({ className = "h-5 w-5" }: { className?: string }) {
   );
 }
 
+type RobloxProfile = {
+  found: boolean;
+  id?: number;
+  name?: string;
+  displayName?: string;
+  avatarUrl?: string | null;
+};
+
 function Index() {
+  const lookup = useServerFn(lookupRobloxUser);
   const [balance, setBalance] = useState(120_000_000);
   const [username, setUsername] = useState("");
   const [selected, setSelected] = useState<number | null>(null);
@@ -36,17 +47,44 @@ function Index() {
   const [toast, setToast] = useState<string | null>(null);
   const [history, setHistory] = useState<Gift[]>([]);
 
-  const canSend =
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [profile, setProfile] = useState<RobloxProfile | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [lookupError, setLookupError] = useState<string | null>(null);
+
+  const canOpen =
     username.trim().length > 0 && selected !== null && selected <= balance && !sending;
 
+  const openConfirm = async () => {
+    if (!canOpen || selected === null) return;
+    setConfirmOpen(true);
+    setProfile(null);
+    setLookupError(null);
+    setLoadingProfile(true);
+    try {
+      const res = (await lookup({ data: { username: username.trim() } })) as RobloxProfile;
+      setProfile(res);
+      if (!res.found) setLookupError("No Roblox user with that name.");
+    } catch {
+      setLookupError("Could not reach Roblox. Try again.");
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
+
+  const closeConfirm = () => {
+    if (sending) return;
+    setConfirmOpen(false);
+  };
+
   const handleSend = () => {
-    if (!canSend || selected === null) return;
+    if (selected === null || !profile?.found) return;
     setSending(true);
     setTimeout(() => {
       setBalance((b) => b - selected);
       const gift: Gift = {
         id: Date.now(),
-        username: username.trim(),
+        username: profile.name ?? username.trim(),
         amount: selected,
         at: new Date().toLocaleTimeString(),
       };
@@ -55,9 +93,12 @@ function Index() {
       setSending(false);
       setSelected(null);
       setUsername("");
+      setProfile(null);
+      setConfirmOpen(false);
       setTimeout(() => setToast(null), 2800);
     }, 700);
   };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -143,17 +184,15 @@ function Index() {
             </div>
 
             <button
-              onClick={handleSend}
-              disabled={!canSend}
+              onClick={openConfirm}
+              disabled={!canOpen}
               className={[
                 "mt-6 w-full rounded-xl py-3.5 font-semibold transition",
                 "bg-primary text-primary-foreground hover:brightness-110 active:scale-[0.99]",
                 "disabled:opacity-50 disabled:cursor-not-allowed shadow-[var(--shadow-glow)]",
               ].join(" ")}
             >
-              {sending
-                ? "Sending..."
-                : selected
+              {selected
                 ? `Send R$ ${fmt(selected)}${username ? ` to @${username}` : ""}`
                 : "Select an amount"}
             </button>
@@ -207,6 +246,90 @@ function Index() {
           <div className="rounded-full border border-primary/40 bg-card px-5 py-3 shadow-[var(--shadow-glow)] flex items-center gap-2">
             <RobuxIcon className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">{toast}</span>
+          </div>
+        </div>
+      )}
+
+      {confirmOpen && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in"
+          onClick={closeConfirm}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md rounded-2xl border border-border p-6 shadow-[var(--shadow-card)] animate-in zoom-in-95"
+            style={{ background: "var(--gradient-card)" }}
+          >
+            <h3 className="text-lg font-bold text-center">Confirm gift</h3>
+            <p className="text-center text-sm text-muted-foreground mt-1">
+              Are you sure you want to send
+            </p>
+            <div className="my-3 flex items-center justify-center gap-2 text-primary">
+              <RobuxIcon className="h-7 w-7" />
+              <span className="text-3xl font-extrabold tabular-nums text-foreground">
+                {selected !== null ? fmt(selected) : ""}
+              </span>
+            </div>
+            <p className="text-center text-sm text-muted-foreground">to</p>
+
+            <div className="mt-4 rounded-xl border border-border bg-card/60 p-4 min-h-[112px] flex items-center gap-4">
+              {loadingProfile ? (
+                <>
+                  <div className="h-16 w-16 rounded-full bg-muted animate-pulse" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-32 rounded bg-muted animate-pulse" />
+                    <div className="h-3 w-20 rounded bg-muted animate-pulse" />
+                  </div>
+                </>
+              ) : profile?.found ? (
+                <>
+                  {profile.avatarUrl ? (
+                    <img
+                      src={profile.avatarUrl}
+                      alt={profile.name}
+                      className="h-16 w-16 rounded-full bg-muted object-cover border border-border"
+                    />
+                  ) : (
+                    <div className="h-16 w-16 rounded-full bg-muted grid place-items-center text-xl font-bold">
+                      {profile.name?.[0]?.toUpperCase()}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-semibold truncate">{profile.displayName}</p>
+                    <p className="text-sm text-muted-foreground truncate">@{profile.name}</p>
+                    <a
+                      href={`https://www.roblox.com/users/${profile.id}/profile`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-primary hover:underline"
+                    >
+                      View profile ↗
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-destructive">
+                  {lookupError ?? "User not found."}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 gap-2.5">
+              <button
+                onClick={closeConfirm}
+                disabled={sending}
+                className="rounded-xl border border-border bg-secondary px-4 py-3 font-medium hover:bg-accent transition disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSend}
+                disabled={sending || loadingProfile || !profile?.found}
+                className="rounded-xl bg-primary text-primary-foreground px-4 py-3 font-semibold hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-[var(--shadow-glow)]"
+              >
+                {sending ? "Sending..." : "Confirm"}
+              </button>
+            </div>
           </div>
         </div>
       )}
