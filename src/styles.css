@@ -9,6 +9,10 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --font-display: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -28,46 +32,85 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-gold: var(--gold);
-  --gradient-balance: var(--gradient-balance);
-  --gradient-card: var(--gradient-card);
-  --shadow-glow: 0 0 40px oklch(0.75 0.18 145 / 0.35);
-  --shadow-card: 0 10px 40px -10px oklch(0 0 0 / 0.5);
+
+  --gradient-robux: var(--gradient-robux);
+  --gradient-surface: var(--gradient-surface);
+  --gradient-radial: var(--gradient-radial);
+  --shadow-glow: 0 0 50px oklch(0.78 0.19 150 / 0.45);
+  --shadow-card: 0 20px 60px -20px oklch(0 0 0 / 0.6);
+  --shadow-inner-glow: inset 0 1px 0 oklch(1 0 0 / 0.08);
 }
 
 :root {
-  --radius: 0.875rem;
-  --background: oklch(0.16 0.02 250);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.22 0.025 250);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.22 0.025 250);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.75 0.18 145);
-  --primary-foreground: oklch(0.16 0.02 250);
-  --secondary: oklch(0.28 0.03 250);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.26 0.025 250);
-  --muted-foreground: oklch(0.7 0.02 250);
-  --accent: oklch(0.32 0.04 250);
-  --accent-foreground: oklch(0.98 0 0);
+  --radius: 1rem;
+
+  /* Roblox-inspired pure dark */
+  --background: oklch(0.13 0.005 250);
+  --foreground: oklch(0.99 0 0);
+
+  --card: oklch(0.18 0.006 250);
+  --card-foreground: oklch(0.99 0 0);
+  --popover: oklch(0.18 0.006 250);
+  --popover-foreground: oklch(0.99 0 0);
+
+  /* Robux green */
+  --primary: oklch(0.78 0.19 150);
+  --primary-foreground: oklch(0.13 0.005 250);
+
+  --secondary: oklch(0.22 0.008 250);
+  --secondary-foreground: oklch(0.99 0 0);
+  --muted: oklch(0.21 0.006 250);
+  --muted-foreground: oklch(0.68 0.01 250);
+  --accent: oklch(0.26 0.01 250);
+  --accent-foreground: oklch(0.99 0 0);
   --destructive: oklch(0.65 0.24 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.3 0.03 250);
-  --input: oklch(0.26 0.025 250);
-  --ring: oklch(0.75 0.18 145);
-  --gold: oklch(0.85 0.17 90);
-  --gradient-balance: linear-gradient(135deg, oklch(0.75 0.18 145), oklch(0.7 0.2 165));
-  --gradient-card: linear-gradient(160deg, oklch(0.24 0.03 250), oklch(0.2 0.025 260));
+  --destructive-foreground: oklch(0.99 0 0);
+
+  --border: oklch(1 0 0 / 0.08);
+  --input: oklch(0.2 0.006 250);
+  --ring: oklch(0.78 0.19 150);
+
+  --gradient-robux: linear-gradient(
+    135deg,
+    oklch(0.82 0.2 148) 0%,
+    oklch(0.7 0.21 155) 50%,
+    oklch(0.6 0.18 165) 100%
+  );
+  --gradient-surface: linear-gradient(
+    180deg,
+    oklch(0.2 0.008 250) 0%,
+    oklch(0.16 0.006 255) 100%
+  );
+  --gradient-radial: radial-gradient(
+    ellipse at top,
+    oklch(0.78 0.19 150 / 0.15) 0%,
+    transparent 60%
+  );
 }
 
 .dark { color-scheme: dark; }
 
 @layer base {
   * { border-color: var(--color-border); }
+  html, body { background: var(--color-background); color: var(--color-foreground); }
   body {
-    background: var(--color-background);
-    color: var(--color-foreground);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, oklch(0.78 0.19 150 / 0.15), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 100%, oklch(0.5 0.2 160 / 0.08), transparent);
+    background-attachment: fixed;
+  }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+}
+
+@layer utilities {
+  .font-display { font-family: var(--font-display); }
+  .text-balance { text-wrap: balance; }
+  .bg-grid {
+    background-image:
+      linear-gradient(oklch(1 0 0 / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(1 0 0 / 0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 }
