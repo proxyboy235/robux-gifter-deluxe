@@ -23,9 +23,27 @@ const fmt = (n: number) => n.toLocaleString("en-US");
 type Gift = { id: number; username: string; amount: number; at: string };
 
 function RobuxIcon({ className = "h-5 w-5" }: { className?: string }) {
+  // Authentic-style Robux glyph: angular hex with R cutout
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden>
-      <path d="M4 4h12.5L20 7.5V20H7.5L4 16.5V4Zm5 5v6h6V9H9Z" />
+    <svg viewBox="0 0 32 32" className={className} aria-hidden>
+      <defs>
+        <linearGradient id="rbxg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="oklch(0.95 0.05 150)" />
+          <stop offset="100%" stopColor="oklch(0.7 0.21 155)" />
+        </linearGradient>
+      </defs>
+      <path
+        fill="url(#rbxg)"
+        d="M16 2 4 8v16l12 6 12-6V8L16 2Zm-3.2 9.6h5.6c2.2 0 3.6 1.4 3.6 3.4 0 1.5-.8 2.6-2.1 3.1l2.4 3.9h-2.9l-2.1-3.5h-2.1v3.5h-2.4v-10.4Zm2.4 2.1v2.7h2.9c1 0 1.6-.5 1.6-1.35s-.6-1.35-1.6-1.35h-2.9Z"
+      />
+    </svg>
+  );
+}
+
+function RobuxIconSolid({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 32 32" className={className} fill="currentColor" aria-hidden>
+      <path d="M16 2 4 8v16l12 6 12-6V8L16 2Zm-3.2 9.6h5.6c2.2 0 3.6 1.4 3.6 3.4 0 1.5-.8 2.6-2.1 3.1l2.4 3.9h-2.9l-2.1-3.5h-2.1v3.5h-2.4v-10.4Zm2.4 2.1v2.7h2.9c1 0 1.6-.5 1.6-1.35s-.6-1.35-1.6-1.35h-2.9Z" />
     </svg>
   );
 }
