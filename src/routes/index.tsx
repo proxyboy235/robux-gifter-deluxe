@@ -184,17 +184,15 @@ function Index() {
             </div>
 
             <button
-              onClick={handleSend}
-              disabled={!canSend}
+              onClick={openConfirm}
+              disabled={!canOpen}
               className={[
                 "mt-6 w-full rounded-xl py-3.5 font-semibold transition",
                 "bg-primary text-primary-foreground hover:brightness-110 active:scale-[0.99]",
                 "disabled:opacity-50 disabled:cursor-not-allowed shadow-[var(--shadow-glow)]",
               ].join(" ")}
             >
-              {sending
-                ? "Sending..."
-                : selected
+              {selected
                 ? `Send R$ ${fmt(selected)}${username ? ` to @${username}` : ""}`
                 : "Select an amount"}
             </button>
