@@ -243,7 +243,7 @@ function Index() {
         {/* History */}
         <aside
           className="rounded-2xl border border-border p-6 shadow-[var(--shadow-card)] h-fit"
-          style={{ background: "var(--gradient-card)" }}
+          style={{ background: "var(--gradient-surface)" }}
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold">Recent gifts</h2>
@@ -299,7 +299,7 @@ function Index() {
           <div
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-md rounded-2xl border border-border p-6 shadow-[var(--shadow-card)] animate-in zoom-in-95"
-            style={{ background: "var(--gradient-card)" }}
+            style={{ background: "var(--gradient-surface)" }}
           >
             <h3 className="text-lg font-bold text-center">Confirm gift</h3>
             <p className="text-center text-sm text-muted-foreground mt-1">
