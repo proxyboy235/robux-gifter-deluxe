@@ -120,18 +120,26 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border/60 backdrop-blur sticky top-0 z-10 bg-background/80">
+      <header className="sticky top-0 z-20 border-b border-border/60 backdrop-blur-xl bg-background/70">
         <div className="mx-auto max-w-5xl px-5 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="grid place-items-center h-9 w-9 rounded-xl bg-primary text-primary-foreground shadow-[var(--shadow-glow)]">
-              <RobuxIcon className="h-5 w-5" />
+          <div className="flex items-center gap-2.5">
+            <div className="relative grid place-items-center h-10 w-10 rounded-xl bg-foreground text-background">
+              <RobuxIconSolid className="h-6 w-6" />
+              <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-primary shadow-[var(--shadow-glow)]" />
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-tight">Robux Gifting</h1>
-              <p className="text-xs text-muted-foreground -mt-0.5">Simulated · For fun only</p>
+              <h1 className="font-display text-xl font-black tracking-tight leading-none">
+                ROBUX<span className="text-primary">.gift</span>
+              </h1>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-1">
+                Simulated · For fun only
+              </p>
             </div>
           </div>
-          <div className="text-xs text-muted-foreground hidden sm:block">Not affiliated with Roblox</div>
+          <div className="hidden sm:flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            <span className="text-xs text-muted-foreground">Online</span>
+          </div>
         </div>
       </header>
 
@@ -139,23 +147,38 @@ function Index() {
         {/* Balance + Send */}
         <section className="space-y-6">
           <div
-            className="relative overflow-hidden rounded-2xl p-6 shadow-[var(--shadow-card)]"
-            style={{ background: "var(--gradient-balance)" }}
+            className="relative overflow-hidden rounded-3xl p-7 shadow-[var(--shadow-card),var(--shadow-inner-glow)] border border-white/10"
+            style={{ background: "var(--gradient-robux)" }}
           >
-            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-            <p className="text-sm font-medium text-primary-foreground/80">Your balance</p>
-            <div className="mt-2 flex items-center gap-2 text-primary-foreground">
-              <RobuxIcon className="h-8 w-8" />
-              <span className="text-4xl sm:text-5xl font-extrabold tracking-tight tabular-nums">
-                {fmt(balance)}
-              </span>
+            <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
+            <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/20 blur-3xl" />
+            <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-black/20 blur-2xl" />
+            <RobuxIconSolid className="absolute right-6 top-6 h-32 w-32 text-black/10" />
+
+            <div className="relative">
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-foreground/70">
+                Your balance
+              </p>
+              <div className="mt-3 flex items-center gap-2.5 text-primary-foreground">
+                <RobuxIconSolid className="h-9 w-9 drop-shadow" />
+                <span className="font-display text-5xl sm:text-6xl font-black tracking-tight tabular-nums leading-none">
+                  {fmt(balance)}
+                </span>
+              </div>
+              <div className="mt-4 flex items-center gap-2">
+                <span className="rounded-full bg-black/25 backdrop-blur px-2.5 py-1 text-[11px] font-semibold text-primary-foreground">
+                  PREMIUM
+                </span>
+                <span className="text-xs text-primary-foreground/80">
+                  Robux available to gift
+                </span>
+              </div>
             </div>
-            <p className="mt-1 text-xs text-primary-foreground/70">Robux available to gift</p>
           </div>
 
           <div
-            className="rounded-2xl border border-border p-6 shadow-[var(--shadow-card)]"
-            style={{ background: "var(--gradient-card)" }}
+            className="rounded-3xl border border-border p-6 shadow-[var(--shadow-card),var(--shadow-inner-glow)]"
+            style={{ background: "var(--gradient-surface)" }}
           >
             <h2 className="text-base font-semibold mb-3">Recipient</h2>
             <div className="flex items-center rounded-xl border border-border bg-input/60 focus-within:ring-2 focus-within:ring-ring transition">
